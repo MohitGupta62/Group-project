@@ -37,3 +37,61 @@ exports.UserLogout = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Logged out successfully!" });
 });
+
+exports.getUser = catchAsyncErrors(async (req, res, next) => {
+  const user = await userModel.findById(req.id);
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
+  const { currentPassword, newPassword, confirmNewPassword } = req.body;
+  if (!currentPassword || !newPassword || !confirmNewPassword) {
+    return next(new ErrorHandler("Please fill all fields.", 400));
+  }
+  const user = await userModel.findById(req.id).select("+password");
+  const isPasswordMatched = await user.comparepassword(currentPassword);
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Incorrect Current Password", 400));
+  }
+  if (newPassword !== confirmNewPassword) {
+    return next(
+      new ErrorHandler(
+        "New Password And Confirm New Password is not Match",
+        400
+      )
+    );
+  }
+  user.password = newPassword;
+  await user.save();
+  res.status(200).json({
+    success: true,
+    message: "Password Updated",
+  });
+});
+
+exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
+  // newUserdata object bana rahe hain jo user ke profile details store karega
+  const newUserdata = {
+    username: req.body.username,
+    email: req.body.email,
+    contact: req.body.contact,
+    gender: req.body.gender,
+    profileImage: req.body.profileImage,
+  };
+
+  // User profile ko update kar rahe hain database mein
+  const user = await userModel.findByIdAndUpdate(req.id, newUserdata, {
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  // Success response bhej rahe hain
+  res.status(200).json({
+    success: true,
+    message: "Profile Updated",
+    newUserdata,
+  });
+});
