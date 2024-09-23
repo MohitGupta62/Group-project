@@ -46,3 +46,7 @@ exports.allClothes = catchAsyncErrors(async( req, res , next) =>{
    const allClothes = await adminModel.findById(req.id).select('createdOrders').populate('createdOrders').exec()
    res.status(201).json(allClothes)
 })
+
+exports.updateCloth = catchAsyncErrors(async( req, res, next) =>{
+  const Cloth = await clothModel.findById(req.params.id).exec();
+})

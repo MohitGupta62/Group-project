@@ -5,6 +5,7 @@ const {
   adminSignin,
   createOrder,
   allClothes,
+  updateCloth
 } = require("../controllers/adminController");
 const { isAuthenticated } = require("../middlewares/auth");
 const router = express.Router();
@@ -23,5 +24,9 @@ router.post("/create-cloth", isAuthenticated, createOrder);
 
 //all-orders
 router.get("/all-clothes", isAuthenticated, allClothes);
+
+//update-clothes
+router.put("/update-cloth/:id", isAuthenticated, updateCloth);
+
 
 module.exports = router;
