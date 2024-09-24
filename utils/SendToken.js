@@ -1,14 +1,15 @@
 exports.sendtoken = (user, statuscode, res) => {
   const token = user.getjwttoken();
 
+  if (!token) {
+    return res.status(500).json({ success: false, message: "Token generation failed" });
+  }
+
   const options = {
     expires: new Date(Date.now() + process.env.EXPIRES_JWT * 60 * 60 * 1000),
-    httpOnly: true, // if we use with localhost
-    //secure: true,              if we use our app on http
+    httpOnly: true,
   };
 
-  //is line se pehle toh statuscode melega phir token name se token cookie me jayega phir .json se hume
-  // message and user._id and token milega
   res
     .status(statuscode)
     .cookie("token", token, options)

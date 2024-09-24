@@ -42,11 +42,41 @@ exports.createOrder = catchAsyncErrors(async(req, res, next) =>{
     res.status(201).json({message: "order created"})
 })
 
+exports.findCloth = catchAsyncErrors( async ( req, res, next)=>{
+  const Cloth = await clothModel.findById(req.params.id).exec()
+  if(!Cloth){
+    return next(
+      next( new ErrorHandler("Cloth not found", 404))
+    )
+  }
+
+  res.status(201).json({message:"Cloth found"})
+
+})
+
 exports.allClothes = catchAsyncErrors(async( req, res , next) =>{
    const allClothes = await adminModel.findById(req.id).select('createdOrders').populate('createdOrders').exec()
    res.status(201).json(allClothes)
 })
 
 exports.updateCloth = catchAsyncErrors(async( req, res, next) =>{
-  const Cloth = await clothModel.findById(req.params.id).exec();
+  const Cloth = await clothModel.findByIdAndUpdate(req.params.id, req.body).exec()
+  if(!Cloth){
+    return next(
+      next( new ErrorHandler("Cloth not found", 404))
+    )
+  }
+
+  res.status(201).json({message:"Cloth updated"});
+})
+
+exports.deleteCloth = catchAsyncErrors(async( req, res, next) =>{
+  const Cloth = await clothModel.findByIdAndDelete(req.params.id).save();
+  if(!Cloth){
+    return next(
+      next( new ErrorHandler("Cloth not found", 404))
+    )
+  }
+
+  res.status(201).json({message:"Clothe deleted"});
 })
