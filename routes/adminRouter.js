@@ -17,7 +17,7 @@ const router = express.Router();
 router.get("/", homepage); 
 
 //currentamdin
-router.get("/current/:id",isAuthenticated, currentAdmin);
+router.get("/current",isAuthenticated, currentAdmin);
 
 //signup
 router.post("/signup", adminSignup);

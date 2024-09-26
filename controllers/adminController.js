@@ -10,7 +10,7 @@ exports.homepage = catchAsyncErrors(async(req, res, next) =>{
 })
 
 exports.currentAdmin = catchAsyncErrors(async(req,res,next) =>{
-  const Admin = await adminModel.find(req.id).exec();
+  const Admin = await adminModel.findById(req.id).exec();
   res.json({Admin});
 })
 
