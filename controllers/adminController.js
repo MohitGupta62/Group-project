@@ -9,6 +9,11 @@ exports.homepage = catchAsyncErrors(async(req, res, next) =>{
     res.json({message: "Homepage"})
 })
 
+exports.currentAdmin = catchAsyncErrors(async(req,res,next) =>{
+  const Admin = await adminModel.find(req.id).exec();
+  res.json({Admin});
+})
+
 exports.adminSignup = catchAsyncErrors(async(req, res, next) =>{
     const Admin = await new adminModel(req.body).save();
     sendtoken(Admin, 201, res)
