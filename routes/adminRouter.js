@@ -7,13 +7,17 @@ const {
   allClothes,
   updateCloth,
   deleteCloth,
-  findCloth
+  findCloth,
+  currentAdmin
 } = require("../controllers/adminController");
 const { isAuthenticated } = require("../middlewares/auth");
 const router = express.Router();
 
 //homepage
-router.get("/", homepage);
+router.get("/", homepage); 
+
+//currentamdin
+router.get("/current/:id",isAuthenticated, currentAdmin);
 
 //signup
 router.post("/signup", adminSignup);
