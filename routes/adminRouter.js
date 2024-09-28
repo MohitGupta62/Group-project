@@ -16,11 +16,11 @@ const router = express.Router();
 //homepage
 router.get("/", homepage); 
 
-//currentamdin
-router.get("/current", currentAdmin);
-
 //signup
 router.post("/signup", adminSignup);
+
+//currentamdin
+router.get("/current",isAuthenticated, currentAdmin);
 
 //signin
 router.post("/signin", adminSignin);
