@@ -20,7 +20,7 @@ router.get("/", homepage);
 router.post("/signup", adminSignup);
 
 //currentamdin
-router.get("/current",isAuthenticated, currentAdmin);
+router.post("/current",isAuthenticated, currentAdmin);
 
 //signin
 router.post("/signin", adminSignin);
