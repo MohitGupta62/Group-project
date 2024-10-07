@@ -1,6 +1,10 @@
 require("dotenv").config({ path: "./.env" });
 const express = require("express");
 const app = express();
+const cors = require("cors");
+
+app.use(cors({ origin: 'http://localhost:5173', credentials: true}));
+console.log("cors setup done")
 
 //dbconnection
 require("./database/dbConnection").connectDatabase();
