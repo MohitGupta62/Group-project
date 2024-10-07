@@ -31,6 +31,8 @@ app.use("/user", require("./routes/userRouter"));
 //base route for manager
 app.use("/admin", require("./routes/adminRouter"));
 
+app.use("/order", require("./routes/orderRouter"));
+
 //ErrorHandler
 const ErrorHandler = require("./utils/ErrorHandler");
 const { generatedErrors } = require("./middlewares/error");
