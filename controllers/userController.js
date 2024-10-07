@@ -1,7 +1,9 @@
 const { catchAsyncErrors } = require("../middlewares/catchAsyncError");
 const userModel = require("../models/userModel");
 const ErrorHandler = require("../utils/ErrorHandler");
+const { sendEmail } = require("../utils/sendMail");
 const { sendtoken } = require("../utils/SendToken");
+const crypto = require("crypto");
 
 exports.homepage = catchAsyncErrors(async (req, res, next) => {
   res.json({ message: "Homepage" });
@@ -70,6 +72,66 @@ exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
     success: true,
     message: "Password Updated",
   });
+});
+
+exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
+  const user = await userModel.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new ErrorHandler("User not Found", 400));
+  }
+  const resetToken = user.getResetPasswordToken();
+  await user.save({ validateBeforeSave: false });
+  const resetPasswordURL = `${process.env.DASHBOARD_URL}/password/reset/${resetToken}`;
+  const message = `Your Reset Password Token is:- \n\n${resetPasswordURL}\n\n If you've not request for this please ignore it.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "User Recovery Password",
+      message,
+    });
+    res.status(200).json({
+      success: true,
+      message: `Email send to ${user.email} successfully!`,
+    });
+  } catch (error) {
+    user.resetPasswordExpire = undefined;
+    user.resetPasswordToken = undefined;
+    await user.save();
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
+  const { token } = req.params;
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const user = await userModel.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  console.log(user);
+
+  if (!user) {
+    return next(
+      new ErrorHandler(
+        "Reset password token is Invalid or has been expired!",
+        400
+      )
+    );
+  }
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new ErrorHandler("Password & Confirm Password Do not Match."));
+  }
+  user.password = req.body.password;
+  user.resetPasswordExpire = undefined;
+  user.resetPasswordToken = undefined;
+  await user.save();
+  sendtoken(user, "Reset Password Succesfully!", 200, res);
 });
 
 exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
