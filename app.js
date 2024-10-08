@@ -3,8 +3,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true}));
-console.log("cors setup done")
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+console.log("cors setup done");
 
 //dbconnection
 require("./database/dbConnection").connectDatabase();
@@ -36,6 +36,8 @@ app.use("/user", require("./routes/userRouter"));
 app.use("/admin", require("./routes/adminRouter"));
 
 app.use("/order", require("./routes/orderRouter"));
+
+app.use("/pay", require("./routes/paymentRoutes"));
 
 //ErrorHandler
 const ErrorHandler = require("./utils/ErrorHandler");
